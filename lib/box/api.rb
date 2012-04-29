@@ -64,6 +64,34 @@ module Box
         value
       else
       query_raw('get', "#{ @base_url }/rest", expected, options)['response']
+      end
+    end
+
+    # Make one or more REST requests that return paged results. Will continue
+    # to iterate until getting an empty page.
+    #
+    # @param [String] expected the normal status expected to be returned.
+    #        If the actual status does not match, an exception is thrown.
+    # @param [Hash] options The parameters that wish to be passed in the
+    #        request. These should coorespond to the api specifications,
+    #        and will be passed along with the api key and auth token.
+    #
+    # @return [Array] A list of parsed XML responses.
+    #
+    def query_rest_paged(expected, options = {})
+      responses = []
+      page_responses = nil
+      until page_responses && page_responses.empty?
+        options[:params] ||= {}
+        options[:params][:page] = responses.count + 1
+        begin
+          page_responses = query_rest(expected, options)
+        rescue Box::Api::Unknown
+          page_responses = []
+        end
+        responses << page_responses
+      end
+      responses.flatten(1)
     end
 
     # Make a download request.
