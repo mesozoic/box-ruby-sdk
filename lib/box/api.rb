@@ -45,7 +45,7 @@ module Box
     # @param [String] expected the normal status expected to be returned.
     #        If the actual status does not match, an exception is thrown.
     # @param [Hash] options The parameters that wish to be passed in the
-    #        request. These should coorespond to the api specifications,
+    #        request. These should correspond to the api specifications,
     #        and will be passed along with the api key and auth token.
     #
     # @return [Hash] A parsed version of the XML response.
