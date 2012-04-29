@@ -9,11 +9,12 @@ module Box
 
     # @return [Api] The {Api} used by this item.
     attr_reader :api
-    
+
     def initialize(api, data = {})
       @api = api
       @data = Hash.new
-      self.update_info(data)
+
+      update_info(data)
     end
 
     def id
@@ -23,17 +24,17 @@ module Box
     def email
       @data["email"]
     end
-    
+
     def name
       @data["name"]
     end
-    
+
     def first_name
       self.name && self.name.split.first
     end
 
     def self.create(api, name, email, data = {})
-      data.merge!(:name => name, :email => email)
+      data.merge!(:name => name, :login => email)
       response = api.query_rest("s_create_managed_user",
         :action => :create_managed_user, :params => data)
       self.new(api, response["new_user"])

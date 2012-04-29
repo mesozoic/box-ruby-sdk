@@ -204,11 +204,10 @@ module Box
     # Gets a group object by id.
     #
     # @param [String] id The id of the group to fetch.
-    #
-    # @note This function will return a group regardless of whether it exists.
-    #
     def group(id)
-      Box::Group.new(@api, :id => id)
+      obj = Box::Group.new(@api, :id => id)
+      obj.reload!
+      obj
     end
 
     # Gets a list of all groups in the account.
@@ -221,11 +220,8 @@ module Box
     # Gets a group object by its name.
     #
     # @param [String] name The name of the group to fetch.
-    #
-    # @note This function will return nil if the group does not exist.
-    #
     def group_with_name(name)
-      groups.select { |g| g.name == name }.first
+      groups.select { |g| g.name.downcase == name.downcase }.first
     end
 
     # Creates a new group in the account.
@@ -238,11 +234,10 @@ module Box
     # Gets a user object by id.
     #
     # @param [String] id The id of the user to fetch.
-    #
-    # @note This function will return a user regardless of whether it exists.
-    #
     def user(id)
-      Box::User.new(@api, :id => id)
+      obj = Box::User.new(@api, :id => id)
+      obj.reload!
+      obj
     end
 
     # Returns all managed users in the account.
@@ -250,6 +245,13 @@ module Box
       users_data = @api.query_rest("s_get_managed_users",
         :action => :get_managed_users, :with_unfold => "users/item")
       users_data.map { |data| Box::User.new(@api, data) }
+    end
+
+    # Gets a user object by its name.
+    #
+    # @param [String] name The name of the user to fetch.
+    def user_with_name(name)
+      users.select { |u| u.name.downcase == name.downcase }.first
     end
 
     # Creates a new managed user in the account.

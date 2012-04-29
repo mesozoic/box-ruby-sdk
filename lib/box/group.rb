@@ -16,7 +16,8 @@ module Box
     def initialize(api, data = {})
       @api = api
       @data = Hash.new
-      self.update_info(data)
+
+      update_info(data)
     end
 
     def id
@@ -74,7 +75,7 @@ module Box
         :params => {:group_id => id},
         :with_unfold => "groups/item").first
     end
-    
+
     def user_data
       @api.query_rest_paged("s_get_group_users",
         :action => :get_group_users,

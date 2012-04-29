@@ -185,7 +185,7 @@ module Box
         :target_id => self.id,
         :with_unfold => "collaborations/collaboration")
     end
-    
+
     def collaborator?(user)
       get_collaborations.map { |c| c["user_id"] }.member?(user.id)
     end
@@ -193,7 +193,7 @@ module Box
     def invite_collaborator(user, role)
       invite_collaborators([user], role)
     end
-    
+
     def invite_collaborators(users, role, options = {})
       @api.query_rest("s_invite_collaborators",
         :action => :invite_collaborators,

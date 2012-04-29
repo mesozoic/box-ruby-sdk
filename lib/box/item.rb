@@ -48,6 +48,11 @@ module Box
 
       @data.merge!(ninfo) # merge in the updated info
     end
+
+    def reload!
+      update_info(get_info)
+      self
+    end
   end
 
   # Represents a folder or file stored on Box. Any attributes or actions
@@ -95,7 +100,7 @@ module Box
       return self if @cached_info and not refresh
 
       @cached_info = true
-      update_info(get_info)
+      reload!
 
       self
     end
