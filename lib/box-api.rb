@@ -10,7 +10,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# These three are the only classes that should be accessed directly
+# These are the only classes that should be accessed directly
 require 'box/account'
 require 'box/file'
 require 'box/folder'
+require 'box/group'
+require 'box/user'
