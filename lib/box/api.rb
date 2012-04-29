@@ -47,10 +47,22 @@ module Box
     # @param [Hash] options The parameters that wish to be passed in the
     #        request. These should correspond to the api specifications,
     #        and will be passed along with the api key and auth token.
+    #        Hash can also include the special value :with_unfold, which takes
+    #        a path value (e.g. "groups/item") that will be used to unpack
+    #        values from the hash returned by the API.
     #
     # @return [Hash] A parsed version of the XML response.
     #
     def query_rest(expected, options = {})
+      options = options.dup
+      if unfold_path = options.delete(:with_unfold)
+        response = query_rest(expected, options) # call w/o :with_unfold
+        value = unfold_path.split("/").inject(response) do |current_hash, key|
+          (current_hash || {})[key] # same as x["foo"]["bar"] but nil-safe
+        end
+        value = [value] unless value.is_a?(Array)
+        value
+      else
       query_raw('get', "#{ @base_url }/rest", expected, options)['response']
     end
 
