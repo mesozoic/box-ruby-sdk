@@ -178,6 +178,34 @@ module Box
       current
     end
 
+    def get_collaborations
+      @api.query_rest("s_get_collaborations",
+        :action => :get_collaborations,
+        :with_unfold => "collaborations/collaboration",
+        :target => "folder",
+        :target_id => self.id)
+    end
+    
+    def collaborator?(user)
+      get_collaborations.map { |c| c["user_id"] }.member?(user.id)
+    end
+
+    def invite_collaborator(user, role)
+      invite_collaborators([user], role)
+    end
+    
+    def invite_collaborators(users, role, options = {})
+      @api.query_rest("s_invite_collaborators",
+        :action => :invite_collaborators,
+        :target => 'folder',
+        :target_id => self.id,
+        :user_ids => users.collect(&:id),
+        :emails => users.collect(&:email),
+        :item_role_name => role,
+        :resend_invite => options.fetch(:resend_invite, false),
+        :no_email => options.fetch(:no_email, false))
+    end
+
     protected
 
     attr_accessor :cached_tree
