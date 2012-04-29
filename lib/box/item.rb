@@ -1,12 +1,63 @@
 require 'box/comment'
 
 module Box
+  # Mix-in for objects that can update their information from the API.
+  module CanUpdateInfo
+    module ClassMethods
+      def type
+        @@type rescue self.name.split("::").last.downcase
+      end
+
+      def types
+        self.type + "s"
+      end
+    end
+
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    def type; self.class.type; end
+    def types; self.class.types; end
+
+    protected
+
+    # Fetches this item's info from the api.
+    #
+    # @return [Hash] The info for the item.
+    def get_info
+      raise "not implemented"
+    end
+
+    # Merges in the given info, making sure the fields are uniform.
+    # This is done because the api will occasionally return fields like
+    # 'file_id', but we want just 'id'.
+    #
+    # @param [Hash] info A hash to be merged this item's info
+    def update_info(info)
+      ninfo = Hash.new
+
+      # some fields are named 'file_id' or 'id' inconsistently, so trim the type off
+      info.each do |name, value|
+        if name.to_s =~ /^#{ type }_(.+)$/
+          ninfo[$1] = value
+        else
+          ninfo[name.to_s] = value
+        end
+      end
+
+      @data.merge!(ninfo) # merge in the updated info
+    end
+  end
+
   # Represents a folder or file stored on Box. Any attributes or actions
   # typical to a Box item can be accessed through this class. The {Item}
   # class contains only methods shared by {Folder} and {File}, and should
   # not be instanciated directly.
 
   class Item
+    include CanUpdateInfo
+
     # @return [Hash] The hash of info for this item.
     attr_accessor :data
 
@@ -28,20 +79,6 @@ module Box
 
       update_info(info) # merges with the info hash, and renames some fields
     end
-
-    # @return [String] The string representation of this item.
-    def self.type; raise "Overwrite this method"; end
-
-    # @return [String] The plural string representation of this item.
-    def self.types; type + 's'; end
-
-    # TODO: There should be a better way of doing this.
-
-    # (see .type)
-    def type; self.class.type; end
-
-    # (see .types)
-    def types; self.class.types; end
 
     # @return [String] The id of this item.
     def id
@@ -209,23 +246,6 @@ module Box
     #
     # @return [Hash] The info for the item.
     def get_info; Hash.new; end
-
-    # Merges in the given info, making sure the fields are uniform.
-    # This is done because the api will occasionally return fields like
-    # 'file_id', but we want just 'id'.
-    #
-    # @param [Hash] info A hash to be merged this item's info
-    def update_info(info)
-      ninfo = Hash.new
-
-      # some fields are named 'file_id' or 'id' inconsistently, so trim the type off
-      info.each do |name, value|
-        if name.to_s =~ /^#{ type }_(.+)$/; ninfo[$1] = value
-        else; ninfo[name.to_s] = value; end
-      end
-
-      @data.merge!(ninfo) # merge in the updated info
-    end
 
     # Invalidates and deletes the cache for a specific field. This forces
     # the item to lazy-load this field if it is requested.
