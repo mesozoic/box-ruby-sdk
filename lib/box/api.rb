@@ -60,6 +60,7 @@ module Box
         value = unfold_path.split("/").inject(response) do |current_hash, key|
           (current_hash || {})[key] # same as x["foo"]["bar"] but nil-safe
         end
+        value ||= []
         value = [value] unless value.is_a?(Array)
         value
       else

@@ -181,9 +181,9 @@ module Box
     def get_collaborations
       @api.query_rest("s_get_collaborations",
         :action => :get_collaborations,
-        :with_unfold => "collaborations/collaboration",
         :target => "folder",
-        :target_id => self.id)
+        :target_id => self.id,
+        :with_unfold => "collaborations/collaboration")
     end
     
     def collaborator?(user)
