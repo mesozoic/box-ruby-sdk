@@ -294,9 +294,6 @@ module Box
 
     protected
 
-    # @return [Api] The api currently in use.
-    attr_reader :api
-
     # The url the user needs to visit in order to grant this application
     # permission to use their account. This requires a ticket, which
     # is either pulled from the cache or requested.
