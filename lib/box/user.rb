@@ -34,9 +34,9 @@ module Box
 
     def self.create(api, name, email, data = {})
       data.merge!(:name => name, :email => email)
-      response = @api.query_rest("s_create_managed_user",
+      response = api.query_rest("s_create_managed_user",
         :action => :create_managed_user, :params => data)
-      self.new(@api, response["new_user"])
+      self.new(api, response["new_user"])
     end
 
     def active?
