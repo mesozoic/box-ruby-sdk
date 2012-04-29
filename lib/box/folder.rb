@@ -206,6 +206,16 @@ module Box
         :no_email => options.fetch(:no_email, false))
     end
 
+    def traverse(path_segments, options = {})
+      create_missing = options[:create]
+      path_segments.inject(self) do |folder, subfolder|
+        found = folder.find(:type => "folder", :name => subfolder).first
+        found ||= folder.create(subfolder) if create_missing
+        raise Box::Api::InvalidFolder unless found
+        found
+      end
+    end
+
     protected
 
     attr_accessor :cached_tree
