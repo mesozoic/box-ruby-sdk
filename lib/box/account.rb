@@ -201,6 +201,67 @@ module Box
       Box::File.new(@api, nil, :id => id)
     end
 
+    # Gets a group object by id.
+    #
+    # @param [String] id The id of the group to fetch.
+    #
+    # @note This function will return a group regardless of whether it exists.
+    #
+    def group(id)
+      Box::Group.new(@api, :id => id)
+    end
+
+    # Gets a list of all groups in the account.
+    def groups
+      response = @api.query_rest_paged("s_get_groups",
+        :action => :get_groups, :with_unfold => "groups/item")
+      response.map { |data| Box::Group.new(@api, data) }
+    end
+
+    # Gets a group object by its name.
+    #
+    # @param [String] name The name of the group to fetch.
+    #
+    # @note This function will return nil if the group does not exist.
+    #
+    def group_with_name(name)
+      groups.select { |g| g.name == name }.first
+    end
+
+    # Creates a new group in the account.
+    #
+    # @param [String] name The name of the group to create.
+    def create_group(name)
+      Box::Group.create(@api, name)
+    end
+
+    # Gets a user object by id.
+    #
+    # @param [String] id The id of the user to fetch.
+    #
+    # @note This function will return a user regardless of whether it exists.
+    #
+    def user(id)
+      Box::User.new(@api, :id => id)
+    end
+
+    # Returns all managed users in the account.
+    def users
+      users_data = @api.query_rest("s_get_managed_users",
+        :action => :get_managed_users, :with_unfold => "users/item")
+      users_data.map { |data| Box::User.new(@api, data) }
+    end
+
+    # Creates a new managed user in the account.
+    #
+    # @param [String] name The name of the user.
+    # @param [String] email The email address of the user.
+    # @param [Hash] options Hash of additional options for the API.
+    # @return [Box::User] The newly-created user object.
+    def create_user(name, email, options = {})
+      Box::User.create(@api, name, email, options)
+    end
+
     # @return [Boolean] Is the account authorized?
     def authorized?
       @info != nil
