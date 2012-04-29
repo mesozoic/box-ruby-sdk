@@ -12,6 +12,9 @@ module Box
     # @return [String] The auth token if authorization was successful.
     attr_reader :auth_token
 
+    # @return [Api] The {Api} used by this item.
+    attr_reader :api
+
     # Creates an account object using the given Box api key.
     # You can then {#register} a new account or {#authorize} an
     # existing account.
