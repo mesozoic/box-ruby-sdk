@@ -54,8 +54,28 @@ module Box
       end
     end
 
+    # Grant permissions to a folder for this group.
+    #
+    # @param [Folder] folder The folder for which we are granting permissions.
+    # @param [String] permissions See http://developers.box.net/w/page/12923911/Api%20Object%20-%20Folder
+    def add_folder(folder, access_level = "dcegknpstuvyfh")
+      @api.query_rest("s_set_folder_in_group",
+        :action => :set_folder_in_group,
+        :group_id => id, :folder_id => folder.id, :permission => access_level)
+    end
+
+    # Revoke permissions to a folder for this group.
+    #
+    # @param [Folder] folder The folder for which we are granting permissions.
+    def remove_folder(folder)
+      @api.query_rest("s_remove_folder_from_group",
+        :action => :remove_folder_from_group,
+        :group_id => id, :folder_id => folder.id)
+    end
+
     def self.create(api, name)
-      api.query_rest("s_create_group", :action => :create_group, :group_name => name)
+      response = api.query_rest("s_create_group",
+        :action => :create_group, :group_name => name)
       self.new(@api, response)
     end
 

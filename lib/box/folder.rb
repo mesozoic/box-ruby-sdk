@@ -216,6 +216,10 @@ module Box
       end
     end
 
+    def empty?
+      (files + folders).empty?
+    end
+
     protected
 
     attr_accessor :cached_tree
