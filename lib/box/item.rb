@@ -20,6 +20,11 @@ module Box
     def type; self.class.type; end
     def types; self.class.types; end
 
+    def reload!
+      update_info(get_info)
+      self
+    end
+
     protected
 
     # Fetches this item's info from the api.
@@ -47,11 +52,6 @@ module Box
       end
 
       @data.merge!(ninfo) # merge in the updated info
-    end
-
-    def reload!
-      update_info(get_info)
-      self
     end
   end
 
