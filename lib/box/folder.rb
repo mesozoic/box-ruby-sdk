@@ -178,6 +178,25 @@ module Box
       current
     end
 
+    # Copy this folder into another one.
+    def copy(destination)
+      if destination.children.map(&:name).member?(name)
+        raise Box::Api::NameTaken, name
+      end
+      if block_given?
+        copy_contents(destination.create(name), &block)
+      else
+        copy_contents(destination.create(name))
+      end
+    end
+
+    def copy_contents(destination)
+      children.each do |item|
+        item.copy(destination)
+        yield(item) if block_given?
+      end
+    end
+
     def get_collaborations
       @api.query_rest("s_get_collaborations",
         :action => :get_collaborations,
@@ -216,8 +235,12 @@ module Box
       end
     end
 
+    def children
+      files + folders
+    end
+
     def empty?
-      (files + folders).empty?
+      children.empty?
     end
 
     protected
