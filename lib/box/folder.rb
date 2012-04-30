@@ -230,7 +230,7 @@ module Box
       path_segments.inject(self) do |folder, subfolder|
         found = folder.find(:type => "folder", :name => subfolder).first
         found ||= folder.create(subfolder) if create_missing
-        raise Box::Api::InvalidFolder unless found
+        raise Box::Api::InvalidFolder, subfolder unless found
         found
       end
     end

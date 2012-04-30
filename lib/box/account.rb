@@ -237,7 +237,14 @@ module Box
     def user(id)
       obj = Box::User.new(@api, :id => id)
       obj.reload!
-      obj
+    end
+
+    # Gets a user object by its login.
+    #
+    # @param [String] login The email address of the user to fetch.
+    def user_with_login(login)
+      obj = Box::User.new(@api, :email => login)
+      obj.reload!
     end
 
     # Returns all managed users in the account.
