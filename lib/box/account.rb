@@ -211,10 +211,13 @@ module Box
     end
 
     # Gets a list of all groups in the account.
-    def groups
-      response = @api.query_rest_paged("s_get_groups",
-        :action => :get_groups, :with_unfold => "groups/item")
-      response.map { |data| Box::Group.new(@api, data) }
+    def groups(refresh = nil)
+      @groups = nil if refresh
+      @groups ||= begin
+        response = @api.query_rest_paged("s_get_groups",
+          :action => :get_groups, :with_unfold => "groups/item")
+        response.map { |data| Box::Group.new(@api, data) }
+      end
     end
 
     # Gets a group object by its name.
@@ -228,6 +231,7 @@ module Box
     #
     # @param [String] name The name of the group to create.
     def create_group(name)
+      @groups = nil
       Box::Group.create(@api, name)
     end
 
@@ -248,10 +252,13 @@ module Box
     end
 
     # Returns all managed users in the account.
-    def users
-      users_data = @api.query_rest("s_get_managed_users",
-        :action => :get_managed_users, :with_unfold => "users/item")
-      users_data.map { |data| Box::User.new(@api, data) }
+    def users(refresh = nil)
+      @users = nil if refresh
+      @users ||= begin
+        users_data = @api.query_rest("s_get_managed_users",
+          :action => :get_managed_users, :with_unfold => "users/item")
+        users_data.map { |data| Box::User.new(@api, data) }
+      end
     end
 
     # Gets a user object by its name.
@@ -268,6 +275,7 @@ module Box
     # @param [Hash] options Hash of additional options for the API.
     # @return [Box::User] The newly-created user object.
     def create_user(name, email, options = {})
+      @users = nil
       Box::User.create(@api, name, email, options)
     end
 
