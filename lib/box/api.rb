@@ -55,16 +55,18 @@ module Box
     #
     def query_rest(expected, options = {})
       options = options.dup
+
       if unfold_path = options.delete(:with_unfold)
         response = query_rest(expected, options) # call w/o :with_unfold
         value = unfold_path.split("/").inject(response) do |current_hash, key|
           (current_hash || {})[key] # same as x["foo"]["bar"] but nil-safe
         end
+        # this would be terser as Array[*(value || [])] but that's illegible
         value ||= []
         value = [value] unless value.is_a?(Array)
         value
       else
-      query_raw('get', "#{ @base_url }/rest", expected, options)['response']
+        query_raw('get', "#{ @base_url }/rest", expected, options)['response']
       end
     end
 
@@ -82,6 +84,7 @@ module Box
     def query_rest_paged(expected, options = {})
       responses = []
       page_responses = nil
+
       until page_responses && page_responses.empty?
         options[:params] ||= {}
         options[:params][:page] = responses.count + 1

@@ -245,6 +245,14 @@ module Box
       @api.unshare(type, id)
     end
 
+    # Add a tag to this item.
+    def tag(*tag_names)
+      @api.query_rest("addtotag_ok", :action => :add_to_tag,
+        :target => type, :target_id => id, :tags => tag_names)
+
+      info(:refresh)
+    end
+
     protected
 
     # Fetches this item's info from the api.
