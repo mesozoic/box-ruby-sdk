@@ -17,6 +17,14 @@ module Box
       update_info(data)
     end
 
+    def name
+      @data["name"]
+    end
+
+    def email
+      @data["email"]
+    end
+
     def first_name
       self.name && self.name.split.first
     end

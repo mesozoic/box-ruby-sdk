@@ -29,6 +29,9 @@ module Box
     class AccountExceeded < Exception; end
     class SizeExceeded < Exception; end
 
+    # User specific responses
+    class UserNotFound < Exception; end
+
     # Sharing specific responses
     class NotShared < Exception; end
 
@@ -86,6 +89,8 @@ module Box
         InvalidInput
       when "share_error", "unshare_error", "private_share_error"
         Generic
+      when "e_get_user_id"
+        UserNotFound
       else
         Unknown
       end

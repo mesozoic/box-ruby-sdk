@@ -20,9 +20,15 @@ module Box
     def type; self.class.type; end
     def types; self.class.types; end
 
+    # @return self
     def reload!
       update_info(get_info)
       self
+    end
+
+    # @return [String] The id of this item.
+    def id
+      @data["id"]
     end
 
     protected
@@ -52,6 +58,27 @@ module Box
       end
 
       @data.merge!(ninfo) # merge in the updated info
+    end
+
+    # Fetches this item's info from the api.
+    #
+    # @return [Hash] The info for the item.
+    def get_info; Hash.new; end
+
+    # Invalidates and deletes the cache for a specific field. This forces
+    # the item to lazy-load this field if it is requested.
+    #
+    # @param [String] field The field to delete.
+    def delete_info(field)
+      @cached_info = false
+      @data.delete(field)
+    end
+
+    # Invalidates and deletes the entire cache. This forces all info to be
+    # lazy-loaded if requested.
+    def clear_info
+      @cached_info = false
+      @data.clear
     end
   end
 
@@ -83,12 +110,6 @@ module Box
       @data = Hash.new
 
       update_info(info) # merges with the info hash, and renames some fields
-    end
-
-    # @return [String] The id of this item.
-    def id
-      # overloads Object#id
-      @data['id']
     end
 
     # Get the info for this item. Uses a cached copy if avaliable,
@@ -251,29 +272,6 @@ module Box
         :target => type, :target_id => id, :tags => tag_names)
 
       info(:refresh)
-    end
-
-    protected
-
-    # Fetches this item's info from the api.
-    #
-    # @return [Hash] The info for the item.
-    def get_info; Hash.new; end
-
-    # Invalidates and deletes the cache for a specific field. This forces
-    # the item to lazy-load this field if it is requested.
-    #
-    # @param [String] field The field to delete.
-    def delete_info(field)
-      @cached_info = false
-      @data.delete(field)
-    end
-
-    # Invalidates and deletes the entire cache. This forces all info to be
-    # lazy-loaded if requested.
-    def clear_info
-      @cached_info = false
-      @data.clear
     end
   end
 end
