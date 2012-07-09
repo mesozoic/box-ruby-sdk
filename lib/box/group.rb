@@ -29,10 +29,19 @@ module Box
     end
 
     def users(with_access = nil)
-      @users ||= begin
+      @users ||= {}
+      @users[with_access] ||= begin
         data = user_data.reject { |u| with_access && (u["access_level"] == with_access) }
         data.map { |user_data| Box::User.new(@api, user_data) }
       end
+    end
+
+    def admins
+      users("admin")
+    end
+
+    def members
+      users("member")
     end
 
     def add_user(user, access_level = "member")
