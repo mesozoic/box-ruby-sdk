@@ -29,8 +29,8 @@ module Box
     end
 
     def users(with_access = nil)
-      @users ||= {}
-      @users[with_access] ||= begin
+      @users_with_access ||= {}
+      @users_with_access[with_access] ||= begin
         data = user_data
         data.reject! { |u| u["access_level"] != with_access } if with_access
         data.map { |user_data| Box::User.new(@api, user_data) }
