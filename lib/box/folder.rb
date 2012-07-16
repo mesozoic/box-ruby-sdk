@@ -197,16 +197,28 @@ module Box
       end
     end
 
-    def get_collaborations
-      @api.query_rest("s_get_collaborations",
+    def collaborations
+      @collaborations ||= @api.query_rest("s_get_collaborations",
         :action => :get_collaborations,
         :target => "folder",
         :target_id => self.id,
         :with_unfold => "collaborations/collaboration")
+      @collaborations.dup
     end
 
-    def collaborator?(user)
-      get_collaborations.map { |c| c["user_id"] }.member?(user.id)
+    def collaboration_with(user, role = nil)
+      collabs = collaborations
+      collabs.select! { |c| c["user_id"] == user.id }
+      collabs.reject! { |c| role && c["item_role_name"] != role }
+      collabs.first
+    end
+
+    def clear_cached_collaborations!
+      @collaborations = nil
+    end
+
+    def collaborator?(user, role = nil)
+      !!collaboration_with(user, role)
     end
 
     def invite_collaborator(user, role)
@@ -214,6 +226,7 @@ module Box
     end
 
     def invite_collaborators(users, role, options = {})
+      clear_cached_collaborations!
       @api.query_rest("s_invite_collaborators",
         :action => :invite_collaborators,
         :target => 'folder',
@@ -223,6 +236,13 @@ module Box
         :item_role_name => role,
         :resend_invite => options.fetch(:resend_invite, false),
         :no_email => options.fetch(:no_email, false))
+    end
+
+    def uninvite(user)
+      clear_cached_collaborations!
+      @api.query_rest("s_remove_collaboration",
+        :action => :remove_collaboration,
+        :collaboration_id => collaboration_with(user)["id"])
     end
 
     def traverse(path_segments, options = {})
